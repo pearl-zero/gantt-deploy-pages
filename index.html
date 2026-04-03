@@ -8,28 +8,28 @@
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body style="margin:0;padding:0;background:#0D0D0F">
+<body style="margin:0;padding:0;background:#ffffff">
 <div id="root"></div>
 <script type="text/babel">
 const { useState } = React;
 
 const STEPS = [
-  { id:1, label:"STEP 1", title:"Git 도입", desc:"Git 초기화 · GitHub 저장소 생성 · 코드 업로드", week:1, duration:1, color:"#4ADE80" },
-  { id:2, label:"STEP 2", title:"코드 구조 분석", desc:"파일 목록 정리(~23개) · 역할 정의 · 중복 로직 파악", week:1, duration:2, color:"#60A5FA" },
-  { id:3, label:"STEP 3", title:"실행 구조 통합", desc:"while / schedule 제거 · run() 함수 분리", week:2, duration:3, color:"#F472B6" },
-  { id:4, label:"STEP 4", title:"main.py 생성", desc:"전체 스케줄 관리 · 각 job 실행 연결", week:3, duration:2, color:"#FBBF24" },
-  { id:5, label:"STEP 5", title:"BAT 파일 수정", desc:"start python × → python main.py ○", week:4, duration:1, color:"#A78BFA" },
-  { id:6, label:"STEP 6", title:"로그 시스템", desc:"logging 설정 · app.log 기록 · 에러 추적", week:4, duration:2, color:"#34D399" },
-  { id:7, label:"STEP 7", title:"안정성 개선", desc:"try/except · 에러 로그 · 재시도 로직", week:5, duration:2, color:"#FB923C" },
+  { id:1, label:"STEP 1", title:"Git 도입", desc:"Git 초기화 · GitHub 저장소 생성 · 코드 업로드", week:1, duration:1, color:"#16A34A" },
+  { id:2, label:"STEP 2", title:"코드 구조 분석", desc:"파일 목록 정리(~23개) · 역할 정의 · 중복 로직 파악", week:1, duration:2, color:"#2563EB" },
+  { id:3, label:"STEP 3", title:"실행 구조 통합", desc:"while / schedule 제거 · run() 함수 분리", week:2, duration:3, color:"#DB2777" },
+  { id:4, label:"STEP 4", title:"main.py 생성", desc:"전체 스케줄 관리 · 각 job 실행 연결", week:3, duration:2, color:"#D97706" },
+  { id:5, label:"STEP 5", title:"BAT 파일 수정", desc:"start python × → python main.py ○", week:4, duration:1, color:"#7C3AED" },
+  { id:6, label:"STEP 6", title:"로그 시스템", desc:"logging 설정 · app.log 기록 · 에러 추적", week:4, duration:2, color:"#0891B2" },
+  { id:7, label:"STEP 7", title:"안정성 개선", desc:"try/except · 에러 로그 · 재시도 로직", week:5, duration:2, color:"#EA580C" },
 ];
 
 const TOTAL_WEEKS = 6;
 const WEEKS = Array.from({ length: TOTAL_WEEKS }, (_, i) => i + 1);
 const STATUS_OPTIONS = ["대기", "진행중", "완료"];
 const STATUS_STYLES = {
-  대기: { bg:"rgba(255,255,255,0.06)", text:"#888", border:"rgba(255,255,255,0.1)" },
-  진행중: { bg:"rgba(251,191,36,0.15)", text:"#FBBF24", border:"rgba(251,191,36,0.4)" },
-  완료: { bg:"rgba(74,222,128,0.15)", text:"#4ADE80", border:"rgba(74,222,128,0.4)" },
+  대기: { bg:"#F3F4F6", text:"#9CA3AF", border:"#E5E7EB" },
+  진행중: { bg:"#FEF9C3", text:"#CA8A04", border:"#FDE047" },
+  완료: { bg:"#DCFCE7", text:"#16A34A", border:"#86EFAC" },
 };
 
 function GanttApp() {
@@ -48,40 +48,42 @@ function GanttApp() {
   const progress = Math.round((completedCount / STEPS.length) * 100);
 
   return (
-    <div style={{ minHeight:"100vh", background:"#0D0D0F", color:"#E8E8E8", fontFamily:"'DM Mono','Courier New',monospace", padding:0, overflowX:"hidden" }}>
-      <div style={{ borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"28px 24px 20px", background:"rgba(255,255,255,0.02)" }}>
+    <div style={{ minHeight:"100vh", background:"#ffffff", color:"#111827", fontFamily:"'DM Mono','Courier New',monospace", padding:0 }}>
+      {/* Header */}
+      <div style={{ borderBottom:"1px solid #E5E7EB", padding:"28px 24px 20px", background:"#F9FAFB" }}>
         <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
           <div>
-            <div style={{ fontSize:10, letterSpacing:"0.2em", color:"#555", marginBottom:6, textTransform:"uppercase" }}>PROJECT / PYTHON AUTOMATION</div>
-            <h1 style={{ margin:0, fontSize:"clamp(16px,4vw,22px)", fontWeight:700, letterSpacing:"-0.02em", color:"#F0F0F0" }}>🏗️ 구조 개선 프로젝트</h1>
-            <p style={{ margin:"6px 0 0", fontSize:12, color:"#555" }}>observer.bat → main.py 단일 실행 구조 전환</p>
+            <div style={{ fontSize:10, letterSpacing:"0.2em", color:"#9CA3AF", marginBottom:6, textTransform:"uppercase" }}>PROJECT / PYTHON AUTOMATION</div>
+            <h1 style={{ margin:0, fontSize:"clamp(16px,4vw,22px)", fontWeight:700, color:"#111827" }}>🏗️ 구조 개선 프로젝트</h1>
+            <p style={{ margin:"6px 0 0", fontSize:12, color:"#9CA3AF" }}>observer.bat → main.py 단일 실행 구조 전환</p>
           </div>
           <div style={{ textAlign:"right" }}>
-            <div style={{ fontSize:28, fontWeight:700, color:progress===100?"#4ADE80":"#F0F0F0", letterSpacing:"-0.04em" }}>{progress}<span style={{ fontSize:14, color:"#555" }}>%</span></div>
-            <div style={{ fontSize:10, color:"#555", letterSpacing:"0.12em" }}>{completedCount}/{STEPS.length} DONE</div>
+            <div style={{ fontSize:28, fontWeight:700, color:progress===100?"#16A34A":"#111827", letterSpacing:"-0.04em" }}>{progress}<span style={{ fontSize:14, color:"#9CA3AF" }}>%</span></div>
+            <div style={{ fontSize:10, color:"#9CA3AF", letterSpacing:"0.12em" }}>{completedCount}/{STEPS.length} DONE</div>
           </div>
         </div>
-        <div style={{ marginTop:16, height:3, background:"rgba(255,255,255,0.06)", borderRadius:2, overflow:"hidden" }}>
-          <div style={{ height:"100%", width:`${progress}%`, background:progress===100?"linear-gradient(90deg,#4ADE80,#34D399)":"linear-gradient(90deg,#60A5FA,#A78BFA)", borderRadius:2, transition:"width 0.5s ease" }} />
+        <div style={{ marginTop:16, height:4, background:"#E5E7EB", borderRadius:2, overflow:"hidden" }}>
+          <div style={{ height:"100%", width:`${progress}%`, background:progress===100?"#16A34A":"linear-gradient(90deg,#2563EB,#7C3AED)", borderRadius:2, transition:"width 0.5s ease" }} />
         </div>
       </div>
 
+      {/* Gantt */}
       <div style={{ padding:"20px 16px 0" }}>
-        <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#444", marginBottom:12, textTransform:"uppercase" }}>— Gantt Chart</div>
+        <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", marginBottom:12, textTransform:"uppercase" }}>— Gantt Chart</div>
         <div style={{ display:"grid", gridTemplateColumns:"120px 1fr", marginBottom:4 }}>
           <div />
           <div style={{ display:"grid", gridTemplateColumns:`repeat(${TOTAL_WEEKS},1fr)` }}>
-            {WEEKS.map(w => <div key={w} style={{ textAlign:"center", fontSize:9, color:"#444", letterSpacing:"0.1em", paddingBottom:6, borderBottom:"1px solid rgba(255,255,255,0.05)" }}>W{w}</div>)}
+            {WEEKS.map(w => <div key={w} style={{ textAlign:"center", fontSize:9, color:"#9CA3AF", paddingBottom:6, borderBottom:"1px solid #E5E7EB" }}>W{w}</div>)}
           </div>
         </div>
         {STEPS.map(step => {
           const st = statuses[step.id];
           const style = STATUS_STYLES[st];
           return (
-            <div key={step.id} style={{ display:"grid", gridTemplateColumns:"120px 1fr", marginBottom:6, opacity:st==="대기"?0.7:1, transition:"opacity 0.2s" }}>
+            <div key={step.id} style={{ display:"grid", gridTemplateColumns:"120px 1fr", marginBottom:6, opacity:st==="대기"?0.6:1, transition:"opacity 0.2s" }}>
               <div style={{ display:"flex", alignItems:"center", gap:6, paddingRight:8 }}>
                 <button onClick={() => cycleStatus(step.id)} style={{ padding:"2px 7px", borderRadius:3, border:`1px solid ${style.border}`, background:style.bg, color:style.text, fontSize:9, cursor:"pointer", whiteSpace:"nowrap" }}>{st}</button>
-                <span style={{ fontSize:9, color:"#444", whiteSpace:"nowrap" }}>{step.label}</span>
+                <span style={{ fontSize:9, color:"#9CA3AF", whiteSpace:"nowrap" }}>{step.label}</span>
               </div>
               <div style={{ display:"grid", gridTemplateColumns:`repeat(${TOTAL_WEEKS},1fr)` }}>
                 {WEEKS.map(w => {
@@ -91,15 +93,15 @@ function GanttApp() {
                   return (
                     <div key={w} style={{
                       height:28,
-                      background:inRange ? (st==="완료"?`${step.color}33`:st==="진행중"?`${step.color}22`:"rgba(255,255,255,0.04)") : "transparent",
-                      borderTop:inRange?`2px solid ${st!=="대기"?step.color:"rgba(255,255,255,0.12)"}`:"2px solid transparent",
-                      borderLeft:inRange&&isFirst?`2px solid ${st!=="대기"?step.color:"rgba(255,255,255,0.12)"}`:"none",
-                      borderRight:inRange&&isLast?`2px solid ${st!=="대기"?step.color:"rgba(255,255,255,0.12)"}`:"none",
-                      borderBottom:inRange?`2px solid ${st!=="대기"?step.color:"rgba(255,255,255,0.12)"}`:"2px solid transparent",
+                      background:inRange ? (st==="완료"?`${step.color}22`:st==="진행중"?`${step.color}15`:"#F3F4F6") : "transparent",
+                      borderTop:inRange?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"2px solid transparent",
+                      borderLeft:inRange&&isFirst?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"none",
+                      borderRight:inRange&&isLast?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"none",
+                      borderBottom:inRange?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"2px solid transparent",
                       borderRadius:isFirst&&isLast?4:isFirst?"4px 0 0 4px":isLast?"0 4px 4px 0":0,
                       display:"flex", alignItems:"center", paddingLeft:isFirst?6:0, overflow:"hidden"
                     }}>
-                      {inRange && isFirst && <span style={{ fontSize:9, fontWeight:600, color:st!=="대기"?step.color:"#555", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{st==="완료"?"✓ ":st==="진행중"?"▶ ":""}{step.title}</span>}
+                      {inRange && isFirst && <span style={{ fontSize:9, fontWeight:600, color:st!=="대기"?step.color:"#9CA3AF", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{st==="완료"?"✓ ":st==="진행중"?"▶ ":""}{step.title}</span>}
                     </div>
                   );
                 })}
@@ -109,28 +111,29 @@ function GanttApp() {
         })}
       </div>
 
+      {/* Step Cards */}
       <div style={{ padding:"24px 16px 16px" }}>
-        <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#444", marginBottom:12, textTransform:"uppercase" }}>— Step Details</div>
+        <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", marginBottom:12, textTransform:"uppercase" }}>— Step Details</div>
         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
           {STEPS.map(step => {
             const st = statuses[step.id];
             const style = STATUS_STYLES[st];
             const isEditing = editingNote === step.id;
             return (
-              <div key={step.id} style={{ border:`1px solid ${st!=="대기"?step.color+"44":"rgba(255,255,255,0.07)"}`, borderRadius:8, background:st==="완료"?`${step.color}08`:"rgba(255,255,255,0.02)", transition:"all 0.2s" }}>
+              <div key={step.id} style={{ border:`1px solid ${st!=="대기"?step.color+"44":"#E5E7EB"}`, borderRadius:8, background:st==="완료"?`${step.color}08`:"#FAFAFA", transition:"all 0.2s" }}>
                 <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
                   <div style={{ width:8, height:8, borderRadius:"50%", background:step.color, flexShrink:0, opacity:st==="대기"?0.3:1 }} />
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
-                      <span style={{ fontSize:9, color:"#444" }}>{step.label}</span>
-                      <span style={{ fontSize:12, fontWeight:600, color:st==="완료"?step.color:"#E0E0E0" }}>{step.title}</span>
+                      <span style={{ fontSize:9, color:"#9CA3AF" }}>{step.label}</span>
+                      <span style={{ fontSize:12, fontWeight:600, color:st==="완료"?step.color:"#111827" }}>{step.title}</span>
                     </div>
-                    <div style={{ fontSize:10, color:"#555", marginTop:2 }}>{step.desc}</div>
-                    {notes[step.id] && !isEditing && <div style={{ marginTop:6, fontSize:10, color:"#888", background:"rgba(255,255,255,0.04)", borderRadius:4, padding:"4px 8px", borderLeft:`2px solid ${step.color}66` }}>{notes[step.id]}</div>}
-                    {isEditing && <textarea autoFocus value={notes[step.id]} onChange={e => setNotes(p => ({...p,[step.id]:e.target.value}))} onBlur={() => setEditingNote(null)} placeholder="메모 입력..." style={{ marginTop:6, width:"100%", background:"rgba(255,255,255,0.05)", border:`1px solid ${step.color}44`, borderRadius:4, padding:"6px 8px", color:"#E0E0E0", fontSize:11, fontFamily:"inherit", resize:"vertical", minHeight:50, outline:"none", boxSizing:"border-box" }} />}
+                    <div style={{ fontSize:10, color:"#6B7280", marginTop:2 }}>{step.desc}</div>
+                    {notes[step.id] && !isEditing && <div style={{ marginTop:6, fontSize:10, color:"#6B7280", background:"#F3F4F6", borderRadius:4, padding:"4px 8px", borderLeft:`2px solid ${step.color}` }}>{notes[step.id]}</div>}
+                    {isEditing && <textarea autoFocus value={notes[step.id]} onChange={e => setNotes(p => ({...p,[step.id]:e.target.value}))} onBlur={() => setEditingNote(null)} placeholder="메모 입력..." style={{ marginTop:6, width:"100%", background:"#F9FAFB", border:`1px solid ${step.color}`, borderRadius:4, padding:"6px 8px", color:"#111827", fontSize:11, fontFamily:"inherit", resize:"vertical", minHeight:50, outline:"none", boxSizing:"border-box" }} />}
                   </div>
                   <div style={{ display:"flex", gap:6, flexShrink:0 }}>
-                    <button onClick={() => setEditingNote(isEditing?null:step.id)} style={{ width:24, height:24, borderRadius:4, border:"1px solid rgba(255,255,255,0.1)", background:"transparent", color:"#555", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✏️</button>
+                    <button onClick={() => setEditingNote(isEditing?null:step.id)} style={{ width:24, height:24, borderRadius:4, border:"1px solid #E5E7EB", background:"transparent", color:"#9CA3AF", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✏️</button>
                     <button onClick={() => cycleStatus(step.id)} style={{ padding:"3px 8px", borderRadius:4, border:`1px solid ${style.border}`, background:style.bg, color:style.text, fontSize:9, cursor:"pointer", whiteSpace:"nowrap", fontFamily:"inherit" }}>{st}</button>
                   </div>
                 </div>
@@ -140,8 +143,8 @@ function GanttApp() {
         </div>
       </div>
 
-      <div style={{ margin:"8px 16px 24px", padding:"12px 14px", borderRadius:8, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", fontSize:10, color:"#444", letterSpacing:"0.08em", lineHeight:1.8 }}>
-        <span style={{ color:"#666" }}>🔥 핵심 원칙</span><br />
+      <div style={{ margin:"8px 16px 24px", padding:"12px 14px", borderRadius:8, background:"#F9FAFB", border:"1px solid #E5E7EB", fontSize:10, color:"#9CA3AF", lineHeight:1.8 }}>
+        <span style={{ color:"#6B7280" }}>🔥 핵심 원칙</span><br />
         스케줄은 main.py에서만 · 실행은 하나의 프로세스 · 로그는 반드시 파일로 · 구조는 단순하게
       </div>
     </div>
