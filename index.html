@@ -13,7 +13,7 @@
 <script type="text/babel">
 const { useState } = React;
 
-const STEPS = [
+const INITIAL_STEPS = [
   { id:1, label:"STEP 1", title:"Git 도입", desc:"Git 초기화 · GitHub 저장소 생성 · 코드 업로드", week:1, duration:1, color:"#16A34A" },
   { id:2, label:"STEP 2", title:"코드 구조 분석", desc:"파일 목록 정리(~23개) · 역할 정의 · 중복 로직 파악", week:1, duration:2, color:"#2563EB" },
   { id:3, label:"STEP 3", title:"실행 구조 통합", desc:"while / schedule 제거 · run() 함수 분리", week:2, duration:3, color:"#DB2777" },
@@ -33,9 +33,11 @@ const STATUS_STYLES = {
 };
 
 function GanttApp() {
-  const [statuses, setStatuses] = useState(Object.fromEntries(STEPS.map(s => [s.id, "대기"])));
-  const [notes, setNotes] = useState(Object.fromEntries(STEPS.map(s => [s.id, ""])));
+  const [steps, setSteps] = useState(INITIAL_STEPS);
+  const [statuses, setStatuses] = useState(Object.fromEntries(INITIAL_STEPS.map(s => [s.id, "대기"])));
+  const [notes, setNotes] = useState(Object.fromEntries(INITIAL_STEPS.map(s => [s.id, ""])));
   const [editingNote, setEditingNote] = useState(null);
+  const [editingTitle, setEditingTitle] = useState(null);
 
   const cycleStatus = (id) => {
     setStatuses(prev => {
@@ -44,8 +46,12 @@ function GanttApp() {
     });
   };
 
+  const updateTitle = (id, value) => {
+    setSteps(prev => prev.map(s => s.id === id ? { ...s, title: value } : s));
+  };
+
   const completedCount = Object.values(statuses).filter(s => s === "완료").length;
-  const progress = Math.round((completedCount / STEPS.length) * 100);
+  const progress = Math.round((completedCount / steps.length) * 100);
 
   return (
     <div style={{ minHeight:"100vh", background:"#ffffff", color:"#111827", fontFamily:"'DM Mono','Courier New',monospace", padding:0 }}>
@@ -59,7 +65,7 @@ function GanttApp() {
           </div>
           <div style={{ textAlign:"right" }}>
             <div style={{ fontSize:28, fontWeight:700, color:progress===100?"#16A34A":"#111827", letterSpacing:"-0.04em" }}>{progress}<span style={{ fontSize:14, color:"#9CA3AF" }}>%</span></div>
-            <div style={{ fontSize:10, color:"#9CA3AF", letterSpacing:"0.12em" }}>{completedCount}/{STEPS.length} DONE</div>
+            <div style={{ fontSize:10, color:"#9CA3AF", letterSpacing:"0.12em" }}>{completedCount}/{steps.length} DONE</div>
           </div>
         </div>
         <div style={{ marginTop:16, height:4, background:"#E5E7EB", borderRadius:2, overflow:"hidden" }}>
@@ -76,7 +82,7 @@ function GanttApp() {
             {WEEKS.map(w => <div key={w} style={{ textAlign:"center", fontSize:9, color:"#9CA3AF", paddingBottom:6, borderBottom:"1px solid #E5E7EB" }}>W{w}</div>)}
           </div>
         </div>
-        {STEPS.map(step => {
+        {steps.map(step => {
           const st = statuses[step.id];
           const style = STATUS_STYLES[st];
           return (
@@ -93,7 +99,7 @@ function GanttApp() {
                   return (
                     <div key={w} style={{
                       height:28,
-                      background:inRange ? (st==="완료"?`${step.color}22`:st==="진행중"?`${step.color}15`:"#F3F4F6") : "transparent",
+                      background:inRange?(st==="완료"?`${step.color}22`:st==="진행중"?`${step.color}15`:"#F3F4F6"):"transparent",
                       borderTop:inRange?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"2px solid transparent",
                       borderLeft:inRange&&isFirst?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"none",
                       borderRight:inRange&&isLast?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"none",
@@ -115,10 +121,11 @@ function GanttApp() {
       <div style={{ padding:"24px 16px 16px" }}>
         <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", marginBottom:12, textTransform:"uppercase" }}>— Step Details</div>
         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-          {STEPS.map(step => {
+          {steps.map(step => {
             const st = statuses[step.id];
             const style = STATUS_STYLES[st];
             const isEditing = editingNote === step.id;
+            const isEditingTitle = editingTitle === step.id;
             return (
               <div key={step.id} style={{ border:`1px solid ${st!=="대기"?step.color+"44":"#E5E7EB"}`, borderRadius:8, background:st==="완료"?`${step.color}08`:"#FAFAFA", transition:"all 0.2s" }}>
                 <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
@@ -126,7 +133,36 @@ function GanttApp() {
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
                       <span style={{ fontSize:9, color:"#9CA3AF" }}>{step.label}</span>
-                      <span style={{ fontSize:12, fontWeight:600, color:st==="완료"?step.color:"#111827" }}>{step.title}</span>
+                      {isEditingTitle ? (
+                        <input
+                          autoFocus
+                          value={step.title}
+                          onChange={e => updateTitle(step.id, e.target.value)}
+                          onBlur={() => setEditingTitle(null)}
+                          onKeyDown={e => e.key === "Enter" && setEditingTitle(null)}
+                          style={{
+                            fontSize:12, fontWeight:600, color:"#111827",
+                            border:"none", borderBottom:`2px solid ${step.color}`,
+                            background:"transparent", outline:"none",
+                            fontFamily:"inherit", width:"auto", minWidth:80,
+                            padding:"0 2px"
+                          }}
+                        />
+                      ) : (
+                        <span
+                          onClick={() => setEditingTitle(step.id)}
+                          title="클릭해서 수정"
+                          style={{
+                            fontSize:12, fontWeight:600,
+                            color:st==="완료"?step.color:"#111827",
+                            cursor:"pointer",
+                            borderBottom:"1px dashed #D1D5DB",
+                            paddingBottom:1,
+                          }}
+                        >
+                          {step.title}
+                        </span>
+                      )}
                     </div>
                     <div style={{ fontSize:10, color:"#6B7280", marginTop:2 }}>{step.desc}</div>
                     {notes[step.id] && !isEditing && <div style={{ marginTop:6, fontSize:10, color:"#6B7280", background:"#F3F4F6", borderRadius:4, padding:"4px 8px", borderLeft:`2px solid ${step.color}` }}>{notes[step.id]}</div>}
