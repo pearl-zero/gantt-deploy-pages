@@ -14,8 +14,8 @@
 const { useState } = React;
 
 const INITIAL_STEPS = [
-  { id:1, label:"STEP 1", title:"Git 도입", desc:"Git 초기화 · GitHub 저장소 생성 · 코드 업로드", month:1, duration:1, color:"#16A34A" },
-  { id:2, label:"STEP 2", title:"코드 구조 분석", desc:"파일 목록 정리 · 역할 정의 · 중복 로직 파악", month:1, duration:2, color:"#2563EB" },
+  { id:1, label:"STEP 1", title:"코드 구조 분석", desc:"파일 목록 정리 · 역할 정의 · 중복 로직 파악", month:1, duration:1, color:"#16A34A" },
+  { id:2, label:"STEP 2", title:"유니크 | MECE 작업", desc:"중복 로직 제거 · 카테고리화", month:1, duration:2, color:"#2563EB" },
   { id:3, label:"STEP 3", title:"실행 구조 통합", desc:"while / schedule 제거 · run() 함수 분리", month:2, duration:3, color:"#DB2777" },
   { id:4, label:"STEP 4", title:"main.py 생성", desc:"전체 스케줄 관리 · 각 job 실행 연결", month:3, duration:2, color:"#D97706" },
   { id:5, label:"STEP 5", title:"BAT 파일 수정", desc:"start python × → python main.py ○", month:4, duration:1, color:"#7C3AED" },
@@ -33,8 +33,15 @@ const STATUS_STYLES = {
   완료: { bg:"#DCFCE7", text:"#16A34A", border:"#86EFAC" },
 };
 
+const COLOR_OPTIONS = [
+  "#16A34A", "#2563EB", "#DB2777", "#D97706",
+  "#7C3AED", "#0891B2", "#EA580C", "#DC2626",
+  "#0F766E", "#4338CA", "#65A30D", "#BE185D"
+];
+
 const EditableText = ({ value, onChange, style, multiline }) => {
   const [editing, setEditing] = useState(false);
+
   const commonStyle = {
     ...style,
     background:"transparent",
@@ -60,7 +67,7 @@ const EditableText = ({ value, onChange, style, multiline }) => {
             ...commonStyle,
             resize:"none",
             minHeight:36,
-            fontSize:style.fontSize,
+            fontSize:style?.fontSize,
             lineHeight:1.5
           }}
         />
@@ -73,7 +80,7 @@ const EditableText = ({ value, onChange, style, multiline }) => {
         value={value}
         onChange={e => onChange(e.target.value)}
         onBlur={() => setEditing(false)}
-        onKeyDown={e => e.key==="Enter" && setEditing(false)}
+        onKeyDown={e => e.key === "Enter" && setEditing(false)}
         style={{ ...commonStyle, display:"inline-block" }}
       />
     );
@@ -92,11 +99,24 @@ const EditableText = ({ value, onChange, style, multiline }) => {
 
 function GanttApp() {
   const [steps, setSteps] = useState(INITIAL_STEPS);
-  const [statuses, setStatuses] = useState(Object.fromEntries(INITIAL_STEPS.map(s => [s.id, "대기"])));
-  const [notes, setNotes] = useState(Object.fromEntries(INITIAL_STEPS.map(s => [s.id, ""])));
+  const [statuses, setStatuses] = useState(
+    Object.fromEntries(INITIAL_STEPS.map(s => [s.id, "대기"]))
+  );
+  const [notes, setNotes] = useState(
+    Object.fromEntries(INITIAL_STEPS.map(s => [s.id, ""]))
+  );
   const [editingNote, setEditingNote] = useState(null);
   const [projectTitle, setProjectTitle] = useState("🏗️ 구조 개선 프로젝트");
   const [projectDesc, setProjectDesc] = useState("observer.bat → main.py 단일 실행 구조 전환");
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newStep, setNewStep] = useState({
+    title: "",
+    desc: "",
+    month: 1,
+    duration: 1,
+    color: COLOR_OPTIONS[0],
+  });
 
   const cycleStatus = (id) => {
     setStatuses(prev => {
@@ -116,13 +136,54 @@ function GanttApp() {
     }
   };
 
+  const updateNewStepNum = (field, value) => {
+    const num = parseInt(value, 10);
+    if (!isNaN(num) && num >= 1 && num <= TOTAL_MONTHS) {
+      setNewStep(prev => ({ ...prev, [field]: num }));
+    }
+  };
+
+  const addStep = () => {
+    const title = newStep.title.trim();
+    const desc = newStep.desc.trim();
+
+    if (!title) {
+      alert("Step 제목을 입력해주세요.");
+      return;
+    }
+
+    const nextNumber = steps.length + 1;
+    const newId = steps.length ? Math.max(...steps.map(s => s.id)) + 1 : 1;
+
+    const stepToAdd = {
+      id: newId,
+      label: `STEP ${nextNumber}`,
+      title,
+      desc,
+      month: Math.min(Math.max(Number(newStep.month) || 1, 1), TOTAL_MONTHS),
+      duration: Math.min(Math.max(Number(newStep.duration) || 1, 1), TOTAL_MONTHS),
+      color: newStep.color || COLOR_OPTIONS[0],
+    };
+
+    setSteps(prev => [...prev, stepToAdd]);
+    setStatuses(prev => ({ ...prev, [newId]: "대기" }));
+    setNotes(prev => ({ ...prev, [newId]: "" }));
+    setNewStep({
+      title: "",
+      desc: "",
+      month: 1,
+      duration: 1,
+      color: COLOR_OPTIONS[(nextNumber) % COLOR_OPTIONS.length],
+    });
+    setShowAddForm(false);
+  };
+
   const completedCount = Object.values(statuses).filter(s => s === "완료").length;
-  const progress = Math.round((completedCount / steps.length) * 100);
+  const progress = steps.length ? Math.round((completedCount / steps.length) * 100) : 0;
 
   return (
     <div style={{ minHeight:"100vh", background:"#ffffff", color:"#111827", fontFamily:"'DM Mono','Courier New',monospace", padding:0 }}>
 
-      {/* Header */}
       <div style={{ borderBottom:"1px solid #E5E7EB", padding:"28px 24px 20px", background:"#F9FAFB" }}>
         <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
           <div style={{ flex:1 }}>
@@ -140,6 +201,7 @@ function GanttApp() {
               style={{ fontSize:12, color:"#9CA3AF", display:"block", marginTop:6 }}
             />
           </div>
+
           <div style={{ textAlign:"right" }}>
             <div style={{ fontSize:28, fontWeight:700, color:progress===100?"#16A34A":"#111827", letterSpacing:"-0.04em" }}>
               {progress}<span style={{ fontSize:14, color:"#9CA3AF" }}>%</span>
@@ -147,6 +209,7 @@ function GanttApp() {
             <div style={{ fontSize:10, color:"#9CA3AF" }}>{completedCount}/{steps.length} DONE</div>
           </div>
         </div>
+
         <div style={{ marginTop:16, height:4, background:"#E5E7EB", borderRadius:2, overflow:"hidden" }}>
           <div
             style={{
@@ -160,11 +223,202 @@ function GanttApp() {
         </div>
       </div>
 
-      {/* Gantt */}
       <div style={{ padding:"20px 16px 0" }}>
-        <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", marginBottom:12, textTransform:"uppercase" }}>
-          — Gantt Chart
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap", marginBottom:12 }}>
+          <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", textTransform:"uppercase" }}>
+            — Gantt Chart
+          </div>
+
+          <button
+            onClick={() => setShowAddForm(prev => !prev)}
+            style={{
+              padding:"8px 12px",
+              borderRadius:6,
+              border:"1px solid #D1D5DB",
+              background:"#111827",
+              color:"#ffffff",
+              fontSize:11,
+              cursor:"pointer",
+              fontFamily:"inherit"
+            }}
+          >
+            {showAddForm ? "닫기" : "+ Add Step"}
+          </button>
         </div>
+
+        {showAddForm && (
+          <div style={{
+            marginBottom:16,
+            padding:"14px",
+            border:"1px solid #E5E7EB",
+            borderRadius:10,
+            background:"#FAFAFA"
+          }}>
+            <div style={{ fontSize:10, color:"#9CA3AF", marginBottom:10, textTransform:"uppercase", letterSpacing:"0.12em" }}>
+              New Step
+            </div>
+
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:10 }}>
+              <div>
+                <div style={{ fontSize:10, color:"#6B7280", marginBottom:4 }}>제목</div>
+                <input
+                  value={newStep.title}
+                  onChange={e => setNewStep(prev => ({ ...prev, title:e.target.value }))}
+                  placeholder="예: 배포 자동화"
+                  style={{
+                    width:"100%",
+                    boxSizing:"border-box",
+                    padding:"8px 10px",
+                    border:"1px solid #D1D5DB",
+                    borderRadius:6,
+                    background:"#fff",
+                    outline:"none",
+                    fontFamily:"inherit",
+                    fontSize:12
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize:10, color:"#6B7280", marginBottom:4 }}>설명</div>
+                <input
+                  value={newStep.desc}
+                  onChange={e => setNewStep(prev => ({ ...prev, desc:e.target.value }))}
+                  placeholder="예: 배포 스크립트 정리 및 실행 검증"
+                  style={{
+                    width:"100%",
+                    boxSizing:"border-box",
+                    padding:"8px 10px",
+                    border:"1px solid #D1D5DB",
+                    borderRadius:6,
+                    background:"#fff",
+                    outline:"none",
+                    fontFamily:"inherit",
+                    fontSize:12
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize:10, color:"#6B7280", marginBottom:4 }}>시작 월</div>
+                <input
+                  type="number"
+                  min="1"
+                  max={TOTAL_MONTHS}
+                  value={newStep.month}
+                  onChange={e => updateNewStepNum("month", e.target.value)}
+                  style={{
+                    width:"100%",
+                    boxSizing:"border-box",
+                    padding:"8px 10px",
+                    border:"1px solid #D1D5DB",
+                    borderRadius:6,
+                    background:"#fff",
+                    outline:"none",
+                    fontFamily:"inherit",
+                    fontSize:12
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize:10, color:"#6B7280", marginBottom:4 }}>기간(월)</div>
+                <input
+                  type="number"
+                  min="1"
+                  max={TOTAL_MONTHS}
+                  value={newStep.duration}
+                  onChange={e => updateNewStepNum("duration", e.target.value)}
+                  style={{
+                    width:"100%",
+                    boxSizing:"border-box",
+                    padding:"8px 10px",
+                    border:"1px solid #D1D5DB",
+                    borderRadius:6,
+                    background:"#fff",
+                    outline:"none",
+                    fontFamily:"inherit",
+                    fontSize:12
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize:10, color:"#6B7280", marginBottom:4 }}>색상</div>
+                <select
+                  value={newStep.color}
+                  onChange={e => setNewStep(prev => ({ ...prev, color:e.target.value }))}
+                  style={{
+                    width:"100%",
+                    boxSizing:"border-box",
+                    padding:"8px 10px",
+                    border:"1px solid #D1D5DB",
+                    borderRadius:6,
+                    background:"#fff",
+                    outline:"none",
+                    fontFamily:"inherit",
+                    fontSize:12
+                  }}
+                >
+                  {COLOR_OPTIONS.map(color => (
+                    <option key={color} value={color}>{color}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", gap:8, marginTop:12, flexWrap:"wrap" }}>
+              {COLOR_OPTIONS.map(color => (
+                <button
+                  key={color}
+                  onClick={() => setNewStep(prev => ({ ...prev, color }))}
+                  style={{
+                    width:24,
+                    height:24,
+                    borderRadius:"50%",
+                    border:newStep.color === color ? "2px solid #111827" : "1px solid #D1D5DB",
+                    background:color,
+                    cursor:"pointer"
+                  }}
+                  title={color}
+                />
+              ))}
+            </div>
+
+            <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:14 }}>
+              <button
+                onClick={() => setShowAddForm(false)}
+                style={{
+                  padding:"8px 12px",
+                  borderRadius:6,
+                  border:"1px solid #D1D5DB",
+                  background:"#fff",
+                  color:"#111827",
+                  fontSize:11,
+                  cursor:"pointer",
+                  fontFamily:"inherit"
+                }}
+              >
+                취소
+              </button>
+              <button
+                onClick={addStep}
+                style={{
+                  padding:"8px 12px",
+                  borderRadius:6,
+                  border:"1px solid #111827",
+                  background:"#111827",
+                  color:"#fff",
+                  fontSize:11,
+                  cursor:"pointer",
+                  fontFamily:"inherit"
+                }}
+              >
+                Step 추가
+              </button>
+            </div>
+          </div>
+        )}
 
         <div style={{ display:"grid", gridTemplateColumns:"120px 1fr", marginBottom:4 }}>
           <div />
@@ -234,7 +488,7 @@ function GanttApp() {
                         borderRadius:isFirst && isLast ? 4 : isFirst ? "4px 0 0 4px" : isLast ? "0 4px 4px 0" : 0,
                         display:"flex",
                         alignItems:"center",
-                        paddingLeft:isFirst?6:0,
+                        paddingLeft:isFirst ? 6 : 0,
                         overflow:"hidden",
                         boxSizing:"border-box"
                       }}
@@ -263,7 +517,6 @@ function GanttApp() {
         })}
       </div>
 
-      {/* Step Cards */}
       <div style={{ padding:"24px 16px 16px" }}>
         <div style={{ fontSize:10, letterSpacing:"0.15em", color:"#9CA3AF", marginBottom:12, textTransform:"uppercase" }}>
           — Step Details
@@ -280,29 +533,11 @@ function GanttApp() {
                 style={{ border:`1px solid ${st!=="대기"?step.color+"44":"#E5E7EB"}`, borderRadius:8, background:st==="완료"?`${step.color}08`:"#FAFAFA" }}
               >
                 <div style={{ padding:"10px 14px", display:"flex", alignItems:"flex-start", gap:10 }}>
-                  <div
-                    style={{
-                      width:8,
-                      height:8,
-                      borderRadius:"50%",
-                      background:step.color,
-                      flexShrink:0,
-                      marginTop:4,
-                      opacity:st==="대기"?0.3:1
-                    }}
-                  />
+                  <div style={{ width:8, height:8, borderRadius:"50%", background:step.color, flexShrink:0, marginTop:4, opacity:st==="대기"?0.3:1 }} />
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:4 }}>
-                      <EditableText
-                        value={step.label}
-                        onChange={v => updateStep(step.id, "label", v)}
-                        style={{ fontSize:9, color:"#9CA3AF" }}
-                      />
-                      <EditableText
-                        value={step.title}
-                        onChange={v => updateStep(step.id, "title", v)}
-                        style={{ fontSize:12, fontWeight:600, color:st==="완료"?step.color:"#111827" }}
-                      />
+                      <EditableText value={step.label} onChange={v => updateStep(step.id, "label", v)} style={{ fontSize:9, color:"#9CA3AF" }} />
+                      <EditableText value={step.title} onChange={v => updateStep(step.id, "title", v)} style={{ fontSize:12, fontWeight:600, color:st==="완료"?step.color:"#111827" }} />
                     </div>
 
                     <EditableText
@@ -313,8 +548,7 @@ function GanttApp() {
                     />
 
                     <div style={{ display:"flex", gap:12, marginTop:6, fontSize:10, color:"#9CA3AF", alignItems:"center", flexWrap:"wrap" }}>
-                      <span>
-                        시작 월:
+                      <span>시작 월:
                         <input
                           type="number"
                           min="1"
@@ -335,8 +569,7 @@ function GanttApp() {
                           }}
                         />
                       </span>
-                      <span>
-                        기간(월):
+                      <span>기간(월):
                         <input
                           type="number"
                           min="1"
@@ -360,17 +593,7 @@ function GanttApp() {
                     </div>
 
                     {notes[step.id] && !isEditing && (
-                      <div
-                        style={{
-                          marginTop:6,
-                          fontSize:10,
-                          color:"#6B7280",
-                          background:"#F3F4F6",
-                          borderRadius:4,
-                          padding:"4px 8px",
-                          borderLeft:`2px solid ${step.color}`
-                        }}
-                      >
+                      <div style={{ marginTop:6, fontSize:10, color:"#6B7280", background:"#F3F4F6", borderRadius:4, padding:"4px 8px", borderLeft:`2px solid ${step.color}` }}>
                         {notes[step.id]}
                       </div>
                     )}
