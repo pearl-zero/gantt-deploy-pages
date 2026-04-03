@@ -23,7 +23,7 @@ const INITIAL_STEPS = [
   { id:7, label:"STEP 7", title:"안정성 개선", desc:"try/except · 에러 로그 · 재시도 로직", week:5, duration:2, color:"#EA580C" },
 ];
 
-const TOTAL_WEEKS = 6;
+const TOTAL_WEEKS = 12;
 const WEEKS = Array.from({ length: TOTAL_WEEKS }, (_, i) => i + 1);
 const STATUS_OPTIONS = ["대기", "진행중", "완료"];
 const STATUS_STYLES = {
@@ -96,7 +96,7 @@ function GanttApp() {
         <div style={{ display:"grid", gridTemplateColumns:"120px 1fr", marginBottom:4 }}>
           <div />
           <div style={{ display:"grid", gridTemplateColumns:`repeat(${TOTAL_WEEKS},1fr)` }}>
-            {WEEKS.map(w => <div key={w} style={{ textAlign:"center", fontSize:9, color:"#9CA3AF", paddingBottom:6, borderBottom:"1px solid #E5E7EB" }}>W{w}</div>)}
+            {WEEKS.map(w => <div key={m} style={{ textAlign:"center", fontSize:9, color:"#9CA3AF", paddingBottom:6, borderBottom:"1px solid #E5E7EB" }}>W{w}</div>)}
           </div>
         </div>
         {steps.map(step => {
@@ -109,12 +109,12 @@ function GanttApp() {
                 <span style={{ fontSize:9, color:"#9CA3AF", whiteSpace:"nowrap" }}>{step.label}</span>
               </div>
               <div style={{ display:"grid", gridTemplateColumns:`repeat(${TOTAL_WEEKS},1fr)` }}>
-                {WEEKS.map(w => {
-                  const inRange = w >= step.week && w < step.week + step.duration;
-                  const isFirst = w === step.week;
-                  const isLast = w === step.week + step.duration - 1;
+                {WEEKS.map(m => {
+                  const inRange = m >= step.week && w < step.week + step.duration;
+                  const isFirst = m === step.week;
+                  const isLast = m === step.week + step.duration - 1;
                   return (
-                    <div key={w} style={{
+                    <div key={m} style={{
                       height:28,
                       background:inRange?(st==="완료"?`${step.color}22`:st==="진행중"?`${step.color}15`:"#F3F4F6"):"transparent",
                       borderTop:inRange?`2px solid ${st!=="대기"?step.color:"#D1D5DB"}`:"2px solid transparent",
@@ -159,11 +159,11 @@ function GanttApp() {
 
                     {/* 주차/기간 수정 */}
                     <div style={{ display:"flex", gap:12, marginTop:6, fontSize:10, color:"#9CA3AF", alignItems:"center" }}>
-                      <span>시작 주차:
+                      <span>시작 월:
                         <input type="number" min="1" max={TOTAL_WEEKS} value={step.week} onChange={e => updateStepNum(step.id, "week", e.target.value)}
                           style={{ width:32, marginLeft:4, fontSize:10, border:"none", borderBottom:"1px dashed #D1D5DB", background:"transparent", outline:"none", fontFamily:"inherit", color:"#111827", textAlign:"center" }} />
                       </span>
-                      <span>기간(주):
+                      <span>기간(월):
                         <input type="number" min="1" max={TOTAL_WEEKS} value={step.duration} onChange={e => updateStepNum(step.id, "duration", e.target.value)}
                           style={{ width:32, marginLeft:4, fontSize:10, border:"none", borderBottom:"1px dashed #D1D5DB", background:"transparent", outline:"none", fontFamily:"inherit", color:"#111827", textAlign:"center" }} />
                       </span>
