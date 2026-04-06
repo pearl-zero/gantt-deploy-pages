@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>간트 차트</title>
+<title>Arwen-gantt</title>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,11 +14,11 @@
 const { useState } = React;
 
 const INITIAL_STEPS = [
-  { id:1, label:"STEP 1", title:"코드 구조 분석", desc:"파일 목록 정리 · 역할 정의 · 중복 로직 파악", month:1, duration:1, color:"#16A34A" },
-  { id:2, label:"STEP 2", title:"유니크 | MECE 작업", desc:"중복 로직 제거 · 카테고리화", month:1, duration:2, color:"#2563EB" },
-  { id:3, label:"STEP 3", title:"실행 구조 통합", desc:"while / schedule 제거 · run() 함수 분리", month:2, duration:3, color:"#DB2777" },
-  { id:4, label:"STEP 4", title:"main.py 생성", desc:"전체 스케줄 관리 · 각 job 실행 연결", month:3, duration:2, color:"#D97706" },
-  { id:5, label:"STEP 5", title:"BAT 파일 수정", desc:"start python × → python main.py ○", month:4, duration:1, color:"#7C3AED" },
+  { id:1, label:"STEP 1", title:"지도 작업", desc:"데이터 관리, 업데이트 자동화", month:1, duration:1, color:"#16A34A" },
+  { id:2, label:"STEP 2", title:"코드 구조 분석", desc:"코드 리스트업, 중복 로직 파악", month:1, duration:2, color:"#2563EB" },
+  { id:3, label:"STEP 3", title:"유니크|MECE 작업", desc:"중복 로직 제거, 카테고리화", month:2, duration:3, color:"#DB2777" },
+  { id:4, label:"STEP 4", title:"실행 구조 통합", desc:"전체 스케줄 관리 · 각 job 실행 연결", month:3, duration:2, color:"#D97706" },
+  { id:5, label:"STEP 5", title:"Main.py 생성", desc:"start python × → python main.py ○", month:4, duration:1, color:"#7C3AED" },
   { id:6, label:"STEP 6", title:"로그 시스템", desc:"logging 설정 · app.log 기록 · 에러 추적", month:4, duration:2, color:"#0891B2" },
   { id:7, label:"STEP 7", title:"안정성 개선", desc:"try/except · 에러 로그 · 재시도 로직", month:5, duration:2, color:"#EA580C" },
 ];
